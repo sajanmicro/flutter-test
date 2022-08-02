@@ -68,15 +68,22 @@ class _RegisterViewState extends State<RegisterView> {
                       onPressed: () async {
                         final email = _email.text;
                         final password = _password.text;
-                        final usercredential = await FirebaseAuth.instance
+                        final userCredential = await FirebaseAuth.instance
                             .createUserWithEmailAndPassword(
                           email: email,
                           password: password,
                         );
-                        print(usercredential);
+                        print(userCredential);
                       },
                       child: Text('Register'),
                     ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                            '/login/', (route) => false);
+                      },
+                      child: Text("Registered, Go to login"),
+                    )
                   ],
                 ),
               );

@@ -33,9 +33,9 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
-      ),
+      // appBar: AppBar(
+      //   title: Text('Login'),
+      // ),
       body: FutureBuilder(
         future: Firebase.initializeApp(
             options: DefaultFirebaseOptions.currentPlatform),
@@ -70,18 +70,24 @@ class _LoginPageState extends State<LoginPage> {
                         final email = _email.text;
                         final password = _password.text;
                         try {
-                          final usercredential = await FirebaseAuth.instance
+                          final userCredential = await FirebaseAuth.instance
                               .signInWithEmailAndPassword(
                             email: email,
                             password: password,
                           );
-                          //print(usercredential);
+                          print(userCredential);
                         } on FirebaseAuthException catch (e) {
-                          print(e.code);
+                          print(e);
                         }
                       },
                       child: Text('Login'),
                     ),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                              '/register/', (route) => false);
+                        },
+                        child: Text("Not registered, Register"))
                   ],
                 ),
               );
@@ -90,6 +96,24 @@ class _LoginPageState extends State<LoginPage> {
               return Text('Loading');
           }
         },
+      ),
+    );
+  }
+}
+
+class NotesView extends StatefulWidget {
+  const NotesView({Key? key}) : super(key: key);
+
+  @override
+  State<NotesView> createState() => _NotesViewState();
+}
+
+class _NotesViewState extends State<NotesView> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Main UI'),
       ),
     );
   }

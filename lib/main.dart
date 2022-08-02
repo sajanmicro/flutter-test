@@ -1,3 +1,4 @@
+import 'package:app55/pages/login.dart';
 import 'package:app55/pages/registerview.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -21,6 +22,10 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.deepPurple,
       ),
       home: const HomePage(),
+      routes: {
+        '/login/': (context) => const LoginPage(),
+        '/register/': (context) => const RegisterView(),
+      },
     );
   }
 }
@@ -30,28 +35,46 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
-      ),
-      body: FutureBuilder(
-        future: Firebase.initializeApp(
-            options: DefaultFirebaseOptions.currentPlatform),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.done:
-              final user = FirebaseAuth.instance.currentUser;
-              if (user?.emailVerified ?? false) {
-                print('You are verified');
-              } else {
-                print('U need to verify');
-              }
-              return Text("Done");
-            default:
-              return Text('Loading');
-          }
-        },
-      ),
+    return FutureBuilder(
+      future: Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform),
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.done:
+            // final user = FirebaseAuth.instance.currentUser;
+            // if (user?.emailVerified ?? false) {
+            // } else {
+            //   print('U need to verify');
+            // }
+            return const NotesView();
+          default:
+            return const EmailView();
+        }
+      },
+    );
+  }
+}
+
+class EmailView extends StatefulWidget {
+  const EmailView({Key? key}) : super(key: key);
+
+  @override
+  State<EmailView> createState() => _EmailViewState();
+}
+
+class _EmailViewState extends State<EmailView> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        TextButton(
+          onPressed: () async {
+            final user = FirebaseAuth.instance.currentUser;
+            await user?.sendEmailVerification();
+          },
+          child: const Text("Please verify your email"),
+        )
+      ],
     );
   }
 }
