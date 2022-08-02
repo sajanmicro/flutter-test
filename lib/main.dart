@@ -1,3 +1,4 @@
+import 'package:app55/pages/email_view.dart';
 import 'package:app55/pages/login.dart';
 import 'package:app55/pages/registerview.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -41,40 +42,21 @@ class HomePage extends StatelessWidget {
       builder: (context, snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.done:
-            // final user = FirebaseAuth.instance.currentUser;
-            // if (user?.emailVerified ?? false) {
-            // } else {
-            //   print('U need to verify');
-            // }
-            return const NotesView();
+            final user = FirebaseAuth.instance.currentUser;
+            if (user != null) {
+              if (user.emailVerified) {
+                print('email is verified');
+              } else {
+                return const EmailView();
+              }
+            } else {
+              return const LoginPage();
+            }
+            return const Text('Done');
           default:
-            return const EmailView();
+            return const CircularProgressIndicator();
         }
       },
-    );
-  }
-}
-
-class EmailView extends StatefulWidget {
-  const EmailView({Key? key}) : super(key: key);
-
-  @override
-  State<EmailView> createState() => _EmailViewState();
-}
-
-class _EmailViewState extends State<EmailView> {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TextButton(
-          onPressed: () async {
-            final user = FirebaseAuth.instance.currentUser;
-            await user?.sendEmailVerification();
-          },
-          child: const Text("Please verify your email"),
-        )
-      ],
     );
   }
 }
