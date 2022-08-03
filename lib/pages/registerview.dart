@@ -73,7 +73,7 @@ class _RegisterViewState extends State<RegisterView> {
                           email: email,
                           password: password,
                         );
-                        print(userCredential);
+                        // print(userCredential);
                       },
                       child: Text('Register'),
                     ),

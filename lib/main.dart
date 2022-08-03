@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'firebase_options.dart';
+import 'dart:developer' show log;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login/': (context) => const LoginPage(),
         '/register/': (context) => const RegisterView(),
+        '/mainui/': (context) => const NotesView(),
       },
     );
   }
@@ -45,14 +47,14 @@ class HomePage extends StatelessWidget {
             final user = FirebaseAuth.instance.currentUser;
             if (user != null) {
               if (user.emailVerified) {
-                print('email is verified');
+                return const NotesView();
               } else {
                 return const EmailView();
               }
             } else {
-              return const LoginPage();
+              return const RegisterView();
             }
-            return const Text('Done');
+          //return const Text('Done');
           default:
             return const CircularProgressIndicator();
         }

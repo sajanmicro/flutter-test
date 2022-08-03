@@ -75,7 +75,8 @@ class _LoginPageState extends State<LoginPage> {
                             email: email,
                             password: password,
                           );
-                          print(userCredential);
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                              '/mainui/', (route) => false);
                         } on FirebaseAuthException catch (e) {
                           print(e);
                         }
@@ -93,13 +94,15 @@ class _LoginPageState extends State<LoginPage> {
               );
 
             default:
-              return Text('Loading');
+              return const CircularProgressIndicator();
           }
         },
       ),
     );
   }
 }
+
+enum MenuButton { logout }
 
 class NotesView extends StatefulWidget {
   const NotesView({Key? key}) : super(key: key);
@@ -113,8 +116,58 @@ class _NotesViewState extends State<NotesView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Main UI'),
+        title: const Text('Main UI'),
+        actions: [
+          PopupMenuButton<MenuButton>(
+            onSelected: (value) async {
+              switch (value) {
+                case MenuButton.logout:
+                  final shouldLogout = await showLogOutDialog(context);
+                  if (shouldLogout) {
+                    await FirebaseAuth.instance.signOut();
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      '/login/',
+                      (_) => false,
+                    );
+                  }
+              }
+            },
+            itemBuilder: (context) {
+              return const [
+                PopupMenuItem<MenuButton>(
+                  value: MenuButton.logout,
+                  child: Text('Logout'),
+                ),
+              ];
+            },
+          ),
+        ],
       ),
     );
   }
+}
+
+Future<bool> showLogOutDialog(BuildContext context) {
+  return showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Signout'),
+          content: const Text('Do you want to Signout'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: const Text('Signout'),
+            ),
+          ],
+        );
+      }).then((value) => value ?? false);
 }
