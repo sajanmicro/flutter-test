@@ -1,3 +1,4 @@
+import 'package:app55/constants/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/src/foundation/key.dart';
@@ -57,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
                       keyboardType: TextInputType.emailAddress,
                     ),
                     TextField(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Enter Password',
                       ),
                       controller: _password,
@@ -70,25 +71,25 @@ class _LoginPageState extends State<LoginPage> {
                         final email = _email.text;
                         final password = _password.text;
                         try {
-                          final userCredential = await FirebaseAuth.instance
+                          await FirebaseAuth.instance
                               .signInWithEmailAndPassword(
                             email: email,
                             password: password,
                           );
                           Navigator.of(context).pushNamedAndRemoveUntil(
-                              '/mainui/', (route) => false);
+                              notesRoute, (_) => false);
                         } on FirebaseAuthException catch (e) {
                           print(e);
                         }
                       },
-                      child: Text('Login'),
+                      child: const Text('Login'),
                     ),
                     TextButton(
                         onPressed: () {
                           Navigator.of(context).pushNamedAndRemoveUntil(
                               '/register/', (route) => false);
                         },
-                        child: Text("Not registered, Register"))
+                        child: const Text("Not registered, Register"))
                   ],
                 ),
               );

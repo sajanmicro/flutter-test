@@ -1,3 +1,4 @@
+import 'package:app55/constants/routes.dart';
 import 'package:app55/pages/email_view.dart';
 import 'package:app55/pages/login.dart';
 import 'package:app55/pages/registerview.dart';
@@ -25,9 +26,9 @@ class MyApp extends StatelessWidget {
       ),
       home: const HomePage(),
       routes: {
-        '/login/': (context) => const LoginPage(),
-        '/register/': (context) => const RegisterView(),
-        '/mainui/': (context) => const NotesView(),
+        loginRoute: (context) => const LoginPage(),
+        registerRoute: (context) => const RegisterView(),
+        notesRoute: (context) => const NotesView(),
       },
     );
   }
