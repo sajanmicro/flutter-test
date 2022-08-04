@@ -1,5 +1,5 @@
 import 'package:app55/constants/routes.dart';
-import 'package:app55/pages/login.dart';
+//import 'package:app55/pages/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +34,7 @@ class _RegisterViewState extends State<RegisterView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Register'),
+        title: const Text('Register'),
       ),
       body: FutureBuilder(
         future: Firebase.initializeApp(
@@ -48,7 +48,7 @@ class _RegisterViewState extends State<RegisterView> {
                     Image.asset(
                         fit: BoxFit.cover, height: 150, 'assets/login.png'),
                     TextField(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Enter Email',
                       ),
                       enableSuggestions: false,
@@ -57,7 +57,7 @@ class _RegisterViewState extends State<RegisterView> {
                       keyboardType: TextInputType.emailAddress,
                     ),
                     TextField(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Enter Password',
                       ),
                       controller: _password,
@@ -69,28 +69,28 @@ class _RegisterViewState extends State<RegisterView> {
                       onPressed: () async {
                         final email = _email.text;
                         final password = _password.text;
-                        final userCredential = await FirebaseAuth.instance
+                        await FirebaseAuth.instance
                             .createUserWithEmailAndPassword(
                           email: email,
                           password: password,
                         );
                         // print(userCredential);
                       },
-                      child: Text('Register'),
+                      child: const Text('Register'),
                     ),
                     ElevatedButton(
                       onPressed: () {
                         Navigator.of(context).pushNamedAndRemoveUntil(
                             loginRoute, (route) => false);
                       },
-                      child: Text("Registered, Go to login"),
+                      child: const Text("Registered, Go to login"),
                     )
                   ],
                 ),
               );
 
             default:
-              return Text('Loading');
+              return const Text('Loading');
           }
         },
       ),

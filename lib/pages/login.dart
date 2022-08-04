@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 // import 'package:flutter/src/widgets/framework.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:app55/firebase_options.dart';
+
+import '../utilities/error_dialog.dart';
 //import 'package:firebase_core/firebase_core.dart';
 
 class LoginPage extends StatefulWidget {
@@ -76,10 +78,28 @@ class _LoginPageState extends State<LoginPage> {
                             email: email,
                             password: password,
                           );
+                          // ignore: use_build_context_synchronously
                           Navigator.of(context).pushNamedAndRemoveUntil(
                               notesRoute, (_) => false);
                         } on FirebaseAuthException catch (e) {
-                          print(e);
+                          if (e.code == 'user-not-found') {
+                            await showErrorDialog(
+                              context,
+                              'User not found',
+                            );
+                          } else if (e.code == 'wrong-password') {
+                            await showErrorDialog(
+                              context,
+                              'Wrong password',
+                            );
+                          } else {
+                            await showErrorDialog(context, 'Error:${e.code}');
+                          }
+                        } catch (e) {
+                          await showErrorDialog(
+                            context,
+                            e.toString(),
+                          );
                         }
                       },
                       child: const Text('Login'),
@@ -126,8 +146,9 @@ class _NotesViewState extends State<NotesView> {
                   final shouldLogout = await showLogOutDialog(context);
                   if (shouldLogout) {
                     await FirebaseAuth.instance.signOut();
+                    // ignore: use_build_context_synchronously
                     Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/login/',
+                      loginRoute,
                       (_) => false,
                     );
                   }
