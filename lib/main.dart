@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
         loginRoute: (context) => const LoginPage(),
         registerRoute: (context) => const RegisterView(),
         notesRoute: (context) => const NotesView(),
+        emailRoute: (context) => const EmailView(),
       },
     );
   }
@@ -53,7 +54,7 @@ class HomePage extends StatelessWidget {
                 return const EmailView();
               }
             } else {
-              return const RegisterView();
+              return const LoginPage();
             }
           //return const Text('Done');
           default:
