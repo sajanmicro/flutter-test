@@ -1,9 +1,10 @@
 import 'package:app55/constants/routes.dart';
+import 'package:app55/services/auth/auth_exceptions.dart';
+import 'package:app55/services/auth/auth_services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/src/foundation/key.dart';
 // import 'package:flutter/src/widgets/framework.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:app55/firebase_options.dart';
 
 import '../utilities/error_dialog.dart';
@@ -51,7 +52,7 @@ class _LoginPageState extends State<LoginPage> {
                     Image.asset(
                         fit: BoxFit.cover, height: 150, 'assets/login.png'),
                     TextField(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Enter Email',
                       ),
                       enableSuggestions: false,
@@ -73,13 +74,12 @@ class _LoginPageState extends State<LoginPage> {
                         final email = _email.text;
                         final password = _password.text;
                         try {
-                          await FirebaseAuth.instance
-                              .signInWithEmailAndPassword(
+                          await AuthService.firebase().logIn(
                             email: email,
                             password: password,
                           );
-                          final user = FirebaseAuth.instance.currentUser;
-                          if (user?.emailVerified ?? false) {
+                          final user = AuthService.firebase().currentUser;
+                          if (user?.isEmailverified ?? false) {
                             // ignore: use_build_context_synchronously
                             Navigator.of(context).pushNamedAndRemoveUntil(
                                 notesRoute, (_) => false);
@@ -90,24 +90,20 @@ class _LoginPageState extends State<LoginPage> {
                           }
                           // ignore: use_build_context_synchronously
 
-                        } on FirebaseAuthException catch (e) {
-                          if (e.code == 'user-not-found') {
-                            await showErrorDialog(
-                              context,
-                              'User not found',
-                            );
-                          } else if (e.code == 'wrong-password') {
-                            await showErrorDialog(
-                              context,
-                              'Wrong password',
-                            );
-                          } else {
-                            await showErrorDialog(context, 'Error:${e.code}');
-                          }
-                        } catch (e) {
+                        } on UserNotFoundException {
                           await showErrorDialog(
                             context,
-                            e.toString(),
+                            'User not found',
+                          );
+                        } on WrongpasswordException {
+                          await showErrorDialog(
+                            context,
+                            'Wrong password',
+                          );
+                        } on GenerericException {
+                          await showErrorDialog(
+                            context,
+                            'Authentification Error',
                           );
                         }
                       },
@@ -133,72 +129,3 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 enum MenuButton { logout }
-
-class NotesView extends StatefulWidget {
-  const NotesView({Key? key}) : super(key: key);
-
-  @override
-  State<NotesView> createState() => _NotesViewState();
-}
-
-class _NotesViewState extends State<NotesView> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Main UI'),
-        actions: [
-          PopupMenuButton<MenuButton>(
-            onSelected: (value) async {
-              switch (value) {
-                case MenuButton.logout:
-                  final shouldLogout = await showLogOutDialog(context);
-                  if (shouldLogout) {
-                    await FirebaseAuth.instance.signOut();
-                    // ignore: use_build_context_synchronously
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      loginRoute,
-                      (_) => false,
-                    );
-                  }
-              }
-            },
-            itemBuilder: (context) {
-              return const [
-                PopupMenuItem<MenuButton>(
-                  value: MenuButton.logout,
-                  child: Text('Logout'),
-                ),
-              ];
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-Future<bool> showLogOutDialog(BuildContext context) {
-  return showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Signout'),
-          content: const Text('Do you want to Signout'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-              child: const Text('Signout'),
-            ),
-          ],
-        );
-      }).then((value) => value ?? false);
-}
